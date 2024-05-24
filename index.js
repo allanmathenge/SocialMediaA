@@ -8,7 +8,7 @@ import helmet from "helmet"; /* request safety */
 import morgan from "morgan"; /* For login */
 import path from "path";
 import { fileURLToPath } from "url"; /* path and fileURLToPath allows us to properly set the path */
-
+import authRoutes from "./routes/auth.js";
 import { register } from "./controllers/auth.js";
 
 /* middleware and package configuration */
@@ -44,13 +44,20 @@ const storage = multer.diskStorage({
 /* Save the file */
 const upload = multer({ storage });
 
-/* Authentication  */
-/* "/auth/register" -API route-path must be called from frontend to effect registration */
-/* "upload.single("picture")" - is a middleware, uploads the pic in public/assets folder, before we hit the endpoint register controllers*/
+/* 
+Authentication 
+"/auth/register" -API route-path must be called from frontend to effect registration
+"upload.single("picture")" - is a middleware, uploads the pic in public/assets folder, before we hit the endpoint register controllers
+*/
 
 app.post("/auth/register", upload.single("picture"), register);
 
+/* Routes */
+
+app.use("/auth", authRoutes);
+
 /* MONGOOSE SET-UP */
+
 const PORT = process.env.PORT || 6001;
 mongoose
   .connect(process.env.MONGO_URL, {
