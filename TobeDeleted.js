@@ -1,23 +1,22 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import User from "./model/User.js";
+import User from "./models/User.js";
 
-/* Authentication */
+export const getUserFriends = async (req, res) => {
+try {
+  const { id } = eq.params;
+  const user = User.findById(id);
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
-    if (!user) return res.status(404).json({ msg: "User not found" });
+  const friends = await Promise.all(
+    user.friends.map((id) => User.findById(id));
+  )
 
-    const isMatch = await bcrypt.compare({ password: user.password });
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+  const formattedFriends = friends.amap(
+    ({_id, firstName, lastName, location, occupation, picturePath}) => {
+      return { _id, firstName, lastName, location, occupation, picturePath}
+    }
+  );
 
-    const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    delete password;
-
-    res.status(200).json({ token, user });
-  } catch (err) {
-    res.status(500).json({ msg: `Error occured: ${err.message}` });
+  res.status(200).json(formattedFriends)
+  } catch (error) {
+    res.status(500).json({msg: `${error.message}`});
   }
-};
+}

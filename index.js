@@ -8,8 +8,9 @@ import helmet from "helmet"; /* request safety */
 import morgan from "morgan"; /* For login */
 import path from "path";
 import { fileURLToPath } from "url"; /* path and fileURLToPath allows us to properly set the path */
-import authRoutes from "./routes/auth.js";
 import { register } from "./controllers/auth.js";
+import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js"
 
 /* middleware and package configuration */
 
@@ -55,6 +56,7 @@ app.post("/auth/register", upload.single("picture"), register);
 /* Routes */
 
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 /* MONGOOSE SET-UP */
 
