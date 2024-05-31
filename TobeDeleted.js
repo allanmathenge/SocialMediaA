@@ -1,22 +1,49 @@
 import User from "./models/User.js";
+import Post from "./models/Post.js";
 
-export const getUserFriends = async (req, res) => {
-try {
-  const { id } = eq.params;
-  const user = User.findById(id);
+export const newPost = async (req, res) => {
+  try {
+    const { userId, description, picturePath } = req.body;
+    const user = await User.findById(userId);
 
-  const friends = await Promise.all(
-    user.friends.map((id) => User.findById(id));
-  )
+    const newPost = new Post(
+      {
+        userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        description,
+        location: user.location,
+        userPicturePath: user.picturePath,
+        picturePath,
+        likes: {},
+        comments: {},
+      }
+    )
+    await newPost.save();
+    const post = await Post.find();
 
-  const formattedFriends = friends.amap(
-    ({_id, firstName, lastName, location, occupation, picturePath}) => {
-      return { _id, firstName, lastName, location, occupation, picturePath}
-    }
-  );
-
-  res.status(200).json(formattedFriends)
+    res.status(201).json(post);
   } catch (error) {
-    res.status(500).json({msg: `${error.message}`});
+    res.status(409).json({ message: error.message })
   }
 }
+
+export const getFeedPosts = async (req, res) => {
+  try {
+    const post = await Post.find();
+    res.status(200).json(post);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+}
+
+export const getUserPosts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const post = await Post.find({ userId });
+    res.status(200).json(post)
+  } catch (err) {
+    res.status(404).json({ message: err.message })
+  }
+}
+
